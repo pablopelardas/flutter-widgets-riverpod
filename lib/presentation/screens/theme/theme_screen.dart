@@ -8,7 +8,7 @@ class ThemeScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isDarkMode = ref.watch(isDarkModeProvider);
+    final isDarkMode = ref.watch(themeNotifierProvider).isDarkMode;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Theme'),
@@ -16,7 +16,7 @@ class ThemeScreen extends ConsumerWidget {
         actions: [
           IconButton(
             onPressed: () {
-              ref.read(isDarkModeProvider.notifier).state = !isDarkMode;
+              ref.read(themeNotifierProvider.notifier).toggleDarkMode();
             },
             icon: Icon(
               isDarkMode ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
@@ -48,12 +48,11 @@ class _ColorItem extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final colorList = ref.watch(colorListProvider);
-    final isSelected = ref.watch(selectedColorProvider) == index;
     return RadioListTile(
       value: index,
-      groupValue: ref.watch(selectedColorProvider),
+      groupValue: ref.watch(themeNotifierProvider).selectedColor,
       onChanged: (value) {
-        ref.read(selectedColorProvider.notifier).state = value!;
+        ref.read(themeNotifierProvider.notifier).setColor(value!);
       },
       title: Text(
         'Color $index',
@@ -62,7 +61,7 @@ class _ColorItem extends ConsumerWidget {
       subtitle: Text('${colorList[index].toARGB32()}'),
       secondary: CircleAvatar(backgroundColor: colorList[index]),
       activeColor: colorList[index],
-      selected: isSelected,
+      selected: ref.watch(themeNotifierProvider).selectedColor == index,
     );
   }
 }
